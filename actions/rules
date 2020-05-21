@@ -1,0 +1,21 @@
+---
+name: jira-alert
+description: Handle alert from jira tickets
+enabled: true
+
+trigger:
+  type: core.st2.webhook
+  parameters:
+      url: "https://onejira.verizon.com/secure/Dashboard.jspa"
+
+# only execute for webhook events for issues (updated or created) that have an "mdn" label and are in the backlog
+criteria:
+  trigger.body.webhookEvent: 
+    type: regex
+    pattern: "jira:issue_(created|updated)"
+  trigger.body.issue.fields.labels:
+    type: contains
+    pattern: "mdn"
+  trigger.body.issue.fields.status.name:
+    type: eq
+    pattern: Backlog
